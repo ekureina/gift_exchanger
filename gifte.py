@@ -8,9 +8,9 @@ def send_email(to, subject, text, email, password, server='smtp.gmail.com', port
         server.starttls()
         server.login(email, password)
 
-        BODY = '\r\n'.join(['To: %s' % to,
-                            'From: %s' % email,
-                            'Subject: %s' % subject,
+        BODY = '\r\n'.join(['To: ' + to,
+                            'From: ' + email,
+                            'Subject: ' + subject,
                             '', text])
 
         try:
@@ -30,6 +30,8 @@ sender = ""
 names = []
 senders = {}
 recievers = []
+likes = {}
+dislikes = {}
 gift = {} # Who gifts to who?
 # Open the file we read from
 config_file = open("geconf.txt")
@@ -39,15 +41,19 @@ config_file.close() # We're done with the file
 for line in lines: # Loop through lines
     if num_line == 0: # First line is title
         title = line
-    elif (num_line % 2)  == 1: # Odd lines are names
+    elif (num_line % 4)  == 1: # First lines are names
         names.append(line)
         recievers.append(line)
-    elif (num_line % 2) == 0: # Even lines are emails
-        senders[names[int((num_line-2)/2)]] = line
+    elif (num_line % 4) == 2: # Second lines are emails
+        senders[names[int((num_line-2)/4)]] = line
+    elif (num_line % 4) == 3: # Third lines are likes
+        likes[names[int((num_line-3)/4)]] = line
+    elif (num_line % 4) == 0: # Fourth lines are dislikes
+        dislikes[names[int((num_line-4)/4)]] = line
     num_line += 1 # Increment counter of line
 
 # Set Subject
-subject = "Welcome to " + title
+subject = 'Welcome to ' + title
 
 # Get email and password
 email = input("Which email are you sending from?: ")
@@ -57,11 +63,13 @@ while len(senders) > 0: # While people will still give gifts
     gifter = random.choice(names)
     if gifter in senders: # Gifter hasn't sent yet
         giftee = gifter
-        while giftee == gifter or giftee not in recievers: # Gifter can't gift and giftee can't get two gifts
+        while giftee == gifter or giftee not in recievers: # Gifter can't gift themselves and giftee can't get two gifts
             giftee = random.choice(names)
         # Start emailing
         to = senders[gifter] # Send email to gifter
-        text = 'Your gift exchange recipiant is ' + giftee
+        text = 'Your gift exchange recipiant is ' + giftee + \
+            '\nAnd they like ' + likes[giftee] + \
+            '\nAnd dislike ' + dislikes[giftee]
         send_email(to, subject, text, email, password)
         
         # Remove people from search
