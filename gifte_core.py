@@ -6,25 +6,29 @@ Person = namedtuple('Person', 'name email likes dislikes')
 EMAIL_MESSAGE = "Your TITLE is NAME.\nThey like LIKES.\nThey dislike DISLIKES."
 
 # Email Sending Function
-def send_email(to, subject, text, email, password, server='smtp.gmail.com', port=587):
-        server = smtplib.SMTP(server, port)
-        server.ehlo()
-        server.starttls()
-        server.login(email, password)
+def send_email(to, subject, text, credentials, port=587):
+    server = smtplib.SMTP(infer_server_url(credentials[0]), port)
+    server.ehlo()
+    server.starttls()
+    server.login(credentials[0], credentials[1])
 
-        BODY = '\r\n'.join(['To: ' + to,
-                            'From: ' + email,
-                            'Subject: ' + subject,
-                            '', text])
+    BODY = '\r\n'.join(['To: ' + to,
+                        'From: ' + credentials[0],
+                        'Subject: ' + subject,
+                        '', text])
 
-        try:
-            server.sendmail(email, [to], BODY)
-            print('email sent to ' + to)
-        except BaseException as e:
-            print('error sending mail')
-            print(e)
+    try:
+        server.sendmail(email, [to], BODY)
+        print('email sent to ' + to)
+    except BaseException as e:
+        print('error sending mail')
+        print(e)
 
-        server.quit()
+    server.quit()
+    
+def infer_server_url(email):
+    email_domain = email.split('@')[1]
+    return "smtp." + email_domain
 
 def load_preferences(filename):
     title = ""
@@ -56,13 +60,12 @@ def gift_designation(people):
                 giftee = random.choice(names)
         gifting[gifter] = giftee
     
-def send_emails(gifting, title):
+def send_emails(gifting, title, credentials):
     subject = "Welcome to " + title
-    email, password = get_credentials()
     for gifter in gifting.keys():
         giftee = gifting[gifter]
         send_email(gifter.email, subject, personalize_message(title, giftee),
-            email, password)
+            credentials)
         
 def personalize_message(title, person):
     message = EMAIL_MESSAGE.replace("TITLE", title)
