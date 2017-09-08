@@ -3,9 +3,11 @@ import random, smtplib, logging
 from collections import namedtuple
 from email.message import EmailMessage
 
-Person = namedtuple('Person', 'name email likes dislikes')
-EMAIL_MESSAGE = "Your TITLE is NAME.\nThey like LIKES.\nThey dislike DISLIKES."
+Person = namedtuple('Person', 'name pronoun email likes dislikes')
+EMAIL_MESSAGE = "Your {title} is {name}.\n{pronoun} like {likes}.\n{pronoun} dislike {dislikes}."
 EMAIL_PORT = 587
+NUM_PREFS = 5
+
 logging.basicConfig(level=logging.INFO)
 
 # Email Sending Function
@@ -26,7 +28,6 @@ def load_preferences(filename):
     logging.info("Loading Preferences")
     title = ""
     people = [ ]
-    NUM_PREFS = 4
     # Open needed file
     config_file = open(filename)
     num_line = 0 # readlines  line positions
@@ -36,7 +37,8 @@ def load_preferences(filename):
     title = lines[0]
     for num_line in range(1, len(lines), NUM_PREFS): # Loop through lines
         people.append(Person(lines[num_line], lines[num_line + 1],
-                            lines[num_line+2], lines[num_line + 3]))
+                            lines[num_line+2], lines[num_line + 3],
+                            lines[num_line + 4]))
     logging.info("Preferences Loaded")
     return title, people
 
@@ -69,10 +71,19 @@ def send_emails(gifting, title, credentials):
     # Logout from the SMTP server when done with emails
     logging.info("Finished sending emails")
     server.quit()
+    
+def personalize_message(title, giftee):
+    return EMAIL_MESSAGE.format(title = title, name = giftee.name,
+        pronoun = giftee.pronoun, likes = giftee.likes, dislikes = giftee.dislikes)
         
-def personalize_message(title, person):
-    message = EMAIL_MESSAGE.replace("TITLE", title)
-    message = message.replace("NAME", person.name)
-    message = message.replace(" LIKES", " " + person.likes)
-    message = message.replace("DISLIKES", person.dislikes)
-    return message
+if __name__ == "__main__": # Testing functions work
+    people = [ ]
+    title = "Testing"
+    print(infer_server_url("jdoe@gmail.com"))
+    print(infer_server_url("jdoe@example.com"))
+    people.append(Person("John Doe", "He", "jdoe@example.com", "Penguins", "Windows"))
+    people.append(Person("Edith Example", "She", "eexample@example.com", "Dogs", "Cats"))
+    people.append(Person("Ed Morrison", "They", "emorrison@example.com", "Othello", "Iago"))
+    for person in people:
+        print(personalize_message(title, person))
+    print(gift_designation(people))
