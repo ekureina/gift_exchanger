@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-import getpass, gifte_core, argparse
+import getpass, gifte_core_logic, gifte_core_io, argparse
 
 def main():
     args = parse_args()
     config = args.config if args.config \
         else input("Where would you like to pull your configuration from?: ")
     if config != "":
-        title, people = gifte_core.load_preferences(config)
+        title, people = gifte_core_io.load_preferences(config)
     else:
         title, people = manual_config()
-    gifte_core.send_emails(gifte_core.gift_designation(people), title, get_credentials(args))
+    gifte_core_io.send_emails(gifte_core_logic.gift_designation(people), title, get_credentials(args))
     
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -30,7 +30,7 @@ def manual_config():
     people = [ ]
     for i in range(0, int(input("How many people are participating?: "))):
         person_details = input("Enter the person's Information: Name Pronoun Email Likes Dislikes ").split()
-        people.append(gifte_core.Person(person_details[0], person_details[1], person_details[2],
+        people.append(gifte_core_logic.Person(person_details[0], person_details[1], person_details[2],
             person_details[3], person_details[4]))
     return title, people
 

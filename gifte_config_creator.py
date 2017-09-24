@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from gifte_core_io import write_config_file
+
 def main():
     write_config_file(get_config_name(), get_title(),
         get_people_info())
@@ -18,12 +20,6 @@ def get_people_info():
         people_info.append(input("What is the person's likes?: ") + "\n")
         people_info.append(input("What is the person's dislikes?: ") + "\n")
     return people_info
-
-def write_config_file(config_name, title, people_info):
-    config_file = open(config_name, 'w')
-    config_file.write(title)
-    config_file.writelines(people_info)
-    config_file.close()
     
 if __name__ == "__main__":
     main()

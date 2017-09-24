@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import gifte_core, tkinter, tkinter.filedialog
+import gifte_core_logic, gifte_core_io, tkinter, tkinter.filedialog
 from tkinter import ttk
 
 class Gifte_Tkinter:
@@ -50,9 +50,9 @@ class Gifte_Tkinter:
         self._config_input.insert(0, filename)
         
     def _sendmail(self):
-        title, people = gifte_core.load_preferences(self._config_input.get())
+        title, people = gifte_core_io.load_preferences(self._config_input.get())
         credentials = [ self._email_input.get(), self._password_input.get() ]
-        gifte_core.send_emails(gifte_core.gift_designation(people), title, credentials)
+        gifte_core_io.send_emails(gifte_core_logic.gift_designation(people), title, credentials)
         
     def run(self):
         self._root_window.mainloop()
