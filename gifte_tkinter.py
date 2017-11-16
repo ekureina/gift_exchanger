@@ -19,6 +19,7 @@ class Gifte_Tkinter:
     
     def __init__(self):
         self._root_window = tkinter.Tk()
+        self._root_window.title("Kurennon's Gift Exchanger")
         self._main_frame = ttk.Frame(self._root_window, padding = Gifte_Tkinter.FRAME_PADDING)
         self._email_label = ttk.Label(self._main_frame, text = Gifte_Tkinter.EMAIL_LABEL_TEXT)
         self._email_label.grid(column = 0, row = 0)

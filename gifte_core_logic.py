@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import random logging
+import random, logging
 from collections import namedtuple
 from email.message import EmailMessage
 
